@@ -1,4 +1,4 @@
-function [error_msg, start_point, z, iteration_counter, gnorm, dx] = newton_multidimensional( axis, obj_func, start_point, alpha,  tol, maxiter, is_point_within_range )
+function [error_msg, start_point, z, iteration_counter, gnorm, dx] = newton_multidimensional( axis, obj_func, start_point,  tol, maxiter, is_point_within_range )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -25,10 +25,8 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
 
     newton_step = -(new_mtrx_A \ compute_gradient_and_evaluate( obj_func, start_point ));
     
-    % Work with alpha 1
-    if alpha == 1
-        alpha = linesearch( obj_func, start_point, newton_step );
-    end
+    % figure out alpha
+    alpha = linesearch( obj_func, start_point, newton_step );
     
     next_point = start_point' + alpha * newton_step;        
         
