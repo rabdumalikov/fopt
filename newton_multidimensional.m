@@ -33,21 +33,17 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     next_point = start_point' + alpha * newton_step;        
         
     %% check steps
-    if ~isfinite(next_point)
-        display(['Number of iterations: ' num2str(iteration_counter)])
-        error('x is inf or NaN')
-    end
-     
     if ~is_point_within_range(next_point)
         error_msg = sprintf( "Point(%d,%d) is Out Of Range! Solution: Decrease 'Alpha' or Increase 'Range'", next_point );
         return
     end
     
-    next_z = objective_func( next_point(1),next_point(2) );
-     
     %% update termination metrics and general values
+    
+    next_z = objective_func(next_point(1), next_point(2));
+     
     iteration_counter = iteration_counter + 1;
-    dx = norm(next_point-start_point);
+    dx = norm( next_point - start_point );
     z = next_z;
     start_point = next_point';
     

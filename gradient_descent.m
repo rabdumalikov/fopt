@@ -23,20 +23,16 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     %% take step:
     next_point = start_point' - ( alpha * eval_gradient );
     
-    %% check steps
-    if ~isfinite(next_point)
-        display(['Number of iterations: ' num2str(iteration_counter)])
-        error('x is inf or NaN')
-    end
-    
+    %% check steps   
     if ~is_point_within_range(next_point)
         error_msg = sprintf( "Point(%d,%d) is Out Of Range! Solution: Decrease 'Alpha' or Increase 'Range'", next_point );
         return
     end
     
+    %% update termination metrics and general values
+    
     next_z = objective_func(next_point(1),next_point(2));
     
-    %% update termination metrics and general values
     iteration_counter = iteration_counter + 1;
     dx = norm( next_point - start_point );    
     z = next_z;

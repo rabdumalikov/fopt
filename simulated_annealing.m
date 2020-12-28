@@ -21,8 +21,6 @@ traces = [ start_point, start_point_value ];
 
 while ~finished
     
-    iteration_counter = iteration_counter + 1; % just an iteration counter
-    
     next_point = generate_new_point_in_range(start_point, is_point_within_range);
     next_point_value = objective_func(next_point);
     
@@ -53,7 +51,7 @@ while ~finished
         end
     end
      
-    %% Stop / decrement T criteria
+    %% Algorithm Termination criteria
     if iteration_counter >= maxiter || amount_successes >= max_success
         
         total_amount_of_iterations = total_amount_of_iterations + iteration_counter;
@@ -68,6 +66,9 @@ while ~finished
             amount_successes = 1;
         end
     end
+    
+    iteration_counter = iteration_counter + 1; % just an iteration counter
+    
 end
 
 fval = start_point_value;
