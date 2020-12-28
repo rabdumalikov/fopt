@@ -10,12 +10,14 @@ iteration_counter = 0;
 
 simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, start_point, c );
 
-traces = [ simplex_vertices, objective_func( simplex_vertices ) ];
+traces = [];
 
 while iteration_counter <= maxiter
     
+    traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
+    
     simplex_vertices = sort_by_function_values( objective_func, simplex_vertices );
-       
+    
     idx_for_best = 1;
     idx_for_bad = dimension;
     idx_for_worst = dimension + 1;
@@ -36,11 +38,9 @@ while iteration_counter <= maxiter
     best_value = objective_func( best_point );
     
     point_to_replace = [];
-    colour = [];
     
     if best_value <= reflection_value && reflection_value < bad_value
         point_to_replace = reflection_point;
-        colour = 'yellow'
         
     %% calc expansion
     elseif reflection_value < best_value
@@ -51,9 +51,7 @@ while iteration_counter <= maxiter
             point_to_replace = expansion_point;
         else
             point_to_replace = reflection_point;
-        end
-        
-        colour = 'green';
+        end        
         
     %% outside contraction
     elseif bad_value <= reflection_value && reflection_value < worst_value
@@ -62,11 +60,9 @@ while iteration_counter <= maxiter
 
         if ocontraction_value <= reflection_value
             point_to_replace = ocontraction_point;
-            colour = 'black';
         else
             %% shrinking 
-            simplex_vertices = shrink( idx_for_best, dimension, simplex_vertices, best_point, delta );
-            traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
+            simplex_vertices = shrink( idx_for_best, dimension, simplex_vertices, best_point, delta );            
         end
     %% inside contraction
     elseif reflection_value >= worst_value
@@ -75,17 +71,14 @@ while iteration_counter <= maxiter
 
         if icontraction_value < worst_value
            point_to_replace = icontraction_point;
-           colour = 'cyan';
         else
             %% shrinking 
             simplex_vertices = shrink( idx_for_best, dimension, simplex_vertices, best_point, delta );
-            traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
         end
     end
     
     if point_to_replace
         simplex_vertices(idx_for_worst,:) = point_to_replace;
-        traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
     end
     
     iteration_counter = iteration_counter + 1;
@@ -114,9 +107,7 @@ function result = evaluate_points( obj_func, points )
 function res = compute_centroid( dimension, arr )
     res = sum( arr )/dimension;
 
-function points = sort_by_function_values( obj_func, points )
-    [~, dim] = size(points);
-        
+function points = sort_by_function_values( obj_func, points )        
     eval_pts = evaluate_points( obj_func, points );   
     [ ~, index ] = sort( eval_pts );
     points = points(index,:);   
@@ -147,4 +138,4 @@ function simplex_vertices = compute_three_initial_points( is_point_within_range,
             
             c = c - step;
         end
-end
+    end

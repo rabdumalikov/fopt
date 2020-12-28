@@ -3,7 +3,7 @@
 function traces = simulated_annealing( obj_func, start_point, tol, maxiter, is_point_within_range, report )
 
 %% constants
-Tinit = 100;        % initial temperature
+Tinit = 100; % initial temperature
 alpha = 0.8;
 max_consec_rejections = 100;
 max_success = 20;
@@ -17,10 +17,10 @@ start_point_value = obj_func(start_point);
 total_amount_of_iterations = 0;
 finished = false;
 
-%% save current point
 traces = [ start_point, start_point_value ];
 
 while ~finished
+    
     iteration_counter = iteration_counter + 1; % just an iteration counter
     
     next_point = generate_new_point_in_range(start_point, is_point_within_range);
@@ -33,10 +33,11 @@ while ~finished
         start_point = next_point;
         start_point_value = next_point_value;
         amount_successes = amount_successes + 1;
-        consec = 0;
         
-        %% save current point
+        % save current point
         traces = [ traces; [ start_point, start_point_value ] ];
+
+        consec = 0;
     else
         %% accept new solution, even bad one, based on probability.
         if( rand <= accept_solution( delta_f, T ) ) 
@@ -44,21 +45,21 @@ while ~finished
             start_point_value = next_point_value;
             amount_successes = amount_successes + 1;
             
-            %% save current point
+            % save current point
             traces = [ traces; [ start_point, start_point_value ] ];
+
         else
             consec = consec+1;
         end
     end
      
     %% Stop / decrement T criteria
-    if iteration_counter >= maxiter || amount_successes >= max_success;
+    if iteration_counter >= maxiter || amount_successes >= max_success
         
         total_amount_of_iterations = total_amount_of_iterations + iteration_counter;
         
-        if T < tol || consec >= max_consec_rejections;
+        if T < tol || consec >= max_consec_rejections
             finished = true;
-            break;
         else
             % decrease T according to cooling schedule
             T = lower_temperature( T, alpha ); 
@@ -69,7 +70,6 @@ while ~finished
     end
 end
 
-minimum = start_point;
 fval = start_point_value;
 
 if report

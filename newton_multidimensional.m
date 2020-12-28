@@ -8,11 +8,14 @@ error_msg = ''; gnorm = inf; iteration_counter = 0; dx = inf;
  
 z = obj_func( start_point(1), start_point(2) );
 
-traces = [ start_point, z ];
+traces = [];
 
 % gradient descent algorithm:
 while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     
+    %% save point    
+    traces = [ traces; [ start_point, z ] ];
+
     %% computing next point  
     A = compute_hessian_and_evaluate( obj_func, start_point, report );
     
@@ -45,10 +48,6 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     %% update termination metrics and general values
     iteration_counter = iteration_counter + 1;
     dx = norm(next_point-start_point);
-    
-    % save next point    
-    traces = [ traces; [ next_point', next_z ] ];
-
     z = next_z;
     start_point = next_point';
     
