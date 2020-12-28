@@ -1,4 +1,4 @@
-function [error_msg, start_point, z, iteration_counter, gnorm, dx] = gradient_descent( axis, obj_func, start_point, alpha, tol, maxiter, is_point_within_range )
+function [error_msg, start_point, z, iteration_counter, gnorm, dx] = gradient_descent( axis, obj_func, start_point, alpha, tol, maxiter, is_point_within_range, report )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -15,7 +15,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     plot3(axis, start_point(1), start_point(2), z, 'r*', 'LineWidth', 2 );
     
     %% calculate gradient:
-    eval_gradient = compute_gradient_and_evaluate(obj_func, start_point);
+    eval_gradient = compute_gradient_and_evaluate(obj_func, start_point, report);
     gnorm = norm(eval_gradient);
     
     %% take step:
@@ -47,7 +47,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
 end
 
 %% calculate gradient of the objective function
-function eval_gradient = compute_gradient_and_evaluate(obj_func, point)
+function eval_gradient = compute_gradient_and_evaluate(obj_func, point, report)
     syms x y
     %% computing symbolic gradient
     gradient_vector = gradient(obj_func, [x,y]);
@@ -58,7 +58,9 @@ function eval_gradient = compute_gradient_and_evaluate(obj_func, point)
         eval( subs(gradient_vector(2), [x y], point) )
     ];
     %% dump
-    fprintf( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
-    fprintf( 1, '  -NewPoint(%5.7f,%5.7f)-\n', eval_gradient );
+    if report
+        fprintf( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
+        fprintf( 1, '  -NewPoint(%5.7f,%5.7f)-\n', eval_gradient );
+    end
     
     

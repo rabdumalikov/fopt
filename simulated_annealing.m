@@ -1,6 +1,6 @@
 
     
-function intermediate = simulated_annealing( axis, obj_func, start_point, tol, maxiter, is_point_within_range )
+function intermediate = simulated_annealing( axis, obj_func, start_point, tol, maxiter, is_point_within_range, report )
 
 %% constants
 Tinit = 100;        % initial temperature
@@ -67,12 +67,13 @@ end
 minimum = start_point;
 fval = start_point_value;
 
-fprintf(1, '\n  Initial temperature:     \t%g\n', Tinit);
-fprintf(1, '  Final temperature:       \t%g\n', T);
-fprintf(1, '  Consecutive rejections:  \t%i\n', consec);
-fprintf(1, '  Number of function calls:\t%i\n', total_amount_of_iterations);
-fprintf(1, '  Total final loss:        \t%g\n', fval);
-
+if report
+    fprintf(1, '\n  Initial temperature:     \t%g\n', Tinit);
+    fprintf(1, '  Final temperature:       \t%g\n', T);
+    fprintf(1, '  Consecutive rejections:  \t%i\n', consec);
+    fprintf(1, '  Number of function calls:\t%i\n', total_amount_of_iterations);
+    fprintf(1, '  Total final loss:        \t%g\n', fval);
+end
 
 function result = lower_temperature( T, alpha )
     result = alpha * T;

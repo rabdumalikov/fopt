@@ -7,16 +7,16 @@ iteration_counter = 0;
 % constants
 c = 10;
 
-alpha = 1
-beta  = 2
-gamma = 1/2
-delta = 1/2
+alpha = 1;
+beta  = 2;
+gamma = 1/2;
+delta = 1/2;
 
 x0 = start_point;
 
 simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, x0, c );
 
-plotit( axis, simplex_vertices, objective_func, 'red' )
+plotit( axis, simplex_vertices, objective_func, 'red' );
 
 while iteration_counter <= maxiter
     
@@ -30,7 +30,7 @@ while iteration_counter <= maxiter
     bad_point = simplex_vertices(idx_for_bad,:);
     worst_point = simplex_vertices(idx_for_worst,:);
     
-    centroid = compute_centroid( dimension, simplex_vertices(1:dimension,:) )
+    centroid = compute_centroid( dimension, simplex_vertices(1:dimension,:) );
     
     plot3(axis, centroid(1), centroid(2), objective_func( centroid ), 'r*', 'LineWidth', 2 );
 
@@ -44,7 +44,7 @@ while iteration_counter <= maxiter
     best_value = objective_func( best_point );
     
     point_to_replace = [];
-    colour = []
+    colour = [];
     
     if best_value <= reflection_value && reflection_value < bad_value
         point_to_replace = reflection_point;
@@ -93,7 +93,7 @@ while iteration_counter <= maxiter
     
     if point_to_replace
         simplex_vertices(idx_for_worst,:) = point_to_replace;
-        plotit( axis, simplex_vertices, objective_func, colour )
+        plotit( axis, simplex_vertices, objective_func, colour );
     end
     
     iteration_counter = iteration_counter + 1;
@@ -115,7 +115,7 @@ function result = evaluate_points( obj_func, points )
     [~, dim] = size(points);
     result = zeros(1, dim+1);
     for i=1:dim+1
-        result(i) = feval( obj_func, points(i,:) )
+        result(i) = feval( obj_func, points(i,:) );
     end
 
 

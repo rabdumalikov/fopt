@@ -1,4 +1,4 @@
-function [error_msg, start_point, z, iteration_counter, gnorm, dx] = newton_multidimensional( axis, obj_func, start_point,  tol, maxiter, is_point_within_range )
+function [error_msg, start_point, z, iteration_counter, gnorm, dx] = newton_multidimensional( axis, obj_func, start_point,  tol, maxiter, is_point_within_range, report )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -15,7 +15,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     plot3( axis, start_point(1), start_point(2), z, 'r*', 'LineWidth', 2 );
     
     %% computing next point  
-    A = compute_hessian_and_evaluate( obj_func, start_point );
+    A = compute_hessian_and_evaluate( obj_func, start_point, report );
     
     [L, D] = ldl(A);
     
@@ -23,7 +23,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
 
     new_mtrx_A = L * D * L';
 
-    newton_step = -(new_mtrx_A \ compute_gradient_and_evaluate( obj_func, start_point ));
+    newton_step = -1 * (new_mtrx_A \ compute_gradient_and_evaluate( obj_func, start_point, report ));
     
     % figure out alpha
     alpha = linesearch( obj_func, start_point, newton_step );
@@ -78,7 +78,7 @@ function result = replace_negative_entries_with_delta( D )
     result = D;
     
 %% calculate gradient of the objective function
-function eval_gradient = compute_gradient_and_evaluate(obj_func, point)
+function eval_gradient = compute_gradient_and_evaluate(obj_func, point, report )
     syms x y
     %% computing symbolic gradient
     gradient_vector = gradient(obj_func, [x,y]);
@@ -89,12 +89,14 @@ function eval_gradient = compute_gradient_and_evaluate(obj_func, point)
         eval( subs(gradient_vector(2), [x y], point))
     ];
     %% dump
-    fprintf( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
-    fprintf( 1, '  -NewPoint(%5.7f,%5.7f)-\n', eval_gradient );
+    if report
+        fprintf( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
+        fprintf( 1, '  -NewPoint(%5.7f,%5.7f)-\n', eval_gradient );
+    end
     
     
 %% calculate gradient of the objective function
-function eval_hessian = compute_hessian_and_evaluate(obj_func, point)
+function eval_hessian = compute_hessian_and_evaluate(obj_func, point, report)
     syms x y
     %% computing symbolic hessian
     hessian_mtrx = hessian(obj_func, [x,y]);
@@ -105,8 +107,10 @@ function eval_hessian = compute_hessian_and_evaluate(obj_func, point)
         eval(subs(hessian_mtrx(2,1), [x y], point)), eval(subs(hessian_mtrx(2,2), [x y], point))
     ];
     %% dump
-    fprintf ( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
-    fprintf ( 1, '  -NewPoint(%5.7f,%5.7f,%5.7f,%5.7f)-\n', eval_hessian );
+    if report 
+        fprintf ( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
+        fprintf ( 1, '  -NewPoint(%5.7f,%5.7f,%5.7f,%5.7f)-\n', eval_hessian );
+    end
     
 %% hk - is search direction
 function lambda = linesearch( obj_func, start_point, newton_step )
