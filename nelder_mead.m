@@ -1,22 +1,16 @@
-function opt_value = nelder_mead( axis, start_point, objective_func, maxiter, is_point_within_range )
-
-iteration_counter = 0;
-
-[ ~, dimension ] = size ( start_point );
+function [ traces, opt_value ] = nelder_mead( start_point, objective_func, maxiter, is_point_within_range )
 
 % constants
-c = 10;
+c = 10; alpha = 1; beta = 2; gamma = 1/2; delta = 1/2; 
 
-alpha = 1;
-beta  = 2;
-gamma = 1/2;
-delta = 1/2;
+% other contstants
+iteration_counter = 0;
 
-x0 = start_point;
+[ ~, dimension ] = size( start_point );
 
-simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, x0, c );
+simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, start_point, c );
 
-plotit( axis, simplex_vertices, objective_func, 'red' );
+traces = [ simplex_vertices, objective_func( simplex_vertices ) ];
 
 while iteration_counter <= maxiter
     
@@ -32,8 +26,6 @@ while iteration_counter <= maxiter
     
     centroid = compute_centroid( dimension, simplex_vertices(1:dimension,:) );
     
-    plot3(axis, centroid(1), centroid(2), objective_func( centroid ), 'r*', 'LineWidth', 2 );
-
     % Transformation
     %% calc reflection
     reflection_point = centroid + alpha * ( centroid - worst_point );
@@ -74,7 +66,7 @@ while iteration_counter <= maxiter
         else
             %% shrinking 
             simplex_vertices = shrink( idx_for_best, dimension, simplex_vertices, best_point, delta );
-            plotit( axis, simplex_vertices, objective_func, 'red' );
+            traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
         end
     %% inside contraction
     elseif reflection_value >= worst_value
@@ -87,13 +79,13 @@ while iteration_counter <= maxiter
         else
             %% shrinking 
             simplex_vertices = shrink( idx_for_best, dimension, simplex_vertices, best_point, delta );
-            plotit( axis, simplex_vertices, objective_func, 'red' );
+            traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
         end
     end
     
     if point_to_replace
         simplex_vertices(idx_for_worst,:) = point_to_replace;
-        plotit( axis, simplex_vertices, objective_func, colour );
+        traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
     end
     
     iteration_counter = iteration_counter + 1;
@@ -128,19 +120,6 @@ function points = sort_by_function_values( obj_func, points )
     eval_pts = evaluate_points( obj_func, points );   
     [ ~, index ] = sort( eval_pts );
     points = points(index,:);   
-
-function plotit( axis, points, func, colour )
-    x1 = points(1,:);
-    x2 = points(2,:);
-    x3 = points(3,:);
-    
-    plot3( axis, [x1(1) x2(1) ],[x1(2) x2(2)], [func(x1) func(x2)], 'ko-', 'color', colour, 'LineWidth', 2 );    
-    plot3( axis, [x1(1) x3(1) ],[x1(2) x3(2)], [func(x1) func(x3)], 'ko-', 'color', colour, 'LineWidth', 2 );
-    plot3( axis, [x2(1) x3(1) ],[x2(2) x3(2)], [func(x2) func(x3)], 'ko-', 'color', colour, 'LineWidth', 2 );
-    
-    pause( 0.2 );
-    hold( axis, 'on' );
-    
     
 function simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, start_point, c )
 

@@ -1,4 +1,4 @@
-function [error_msg, start_point, z, iteration_counter, gnorm, dx] = gradient_descent( axis, obj_func, start_point, alpha, tol, maxiter, is_point_within_range, report )
+function [error_msg, traces ] = gradient_descent( obj_func, start_point, alpha, tol, maxiter, is_point_within_range, report )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -8,12 +8,11 @@ error_msg = ''; gnorm = inf; iteration_counter = 0; dx = inf;
 
 z = obj_func(start_point(1),start_point(2));
 
+traces = [ start_point, z ];
+
 % gradient descent algorithm:
 while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
-        
-    %% plot current start point
-    plot3(axis, start_point(1), start_point(2), z, 'r*', 'LineWidth', 2 );
-    
+          
     %% calculate gradient:
     eval_gradient = compute_gradient_and_evaluate(obj_func, start_point, report);
     gnorm = norm(eval_gradient);
@@ -33,15 +32,14 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     end
     
     next_z = obj_func(next_point(1),next_point(2));
-
-    %% plot path from old to new point
-    plot3( axis, [start_point(1) next_point(1) ],[start_point(2) next_point(2)], [z next_z], 'ko-', 'LineWidth', 1 );
-    pause( 0.1 );
-    hold( axis, 'on' );
     
     %% update termination metrics and general values
     iteration_counter = iteration_counter + 1;
     dx = norm( next_point - start_point );
+    
+    % save next point    
+    traces = [ traces; [ next_point', next_z ] ];
+
     z = next_z;
     start_point = next_point';
 end

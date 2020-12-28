@@ -1,4 +1,4 @@
-function [error_msg, start_point, z, iteration_counter, gnorm, dx] = newton_multidimensional( axis, obj_func, start_point,  tol, maxiter, is_point_within_range, report )
+function [error_msg, traces] = newton_multidimensional( obj_func, start_point,  tol, maxiter, is_point_within_range, report )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -8,11 +8,10 @@ error_msg = ''; gnorm = inf; iteration_counter = 0; dx = inf;
  
 z = obj_func( start_point(1), start_point(2) );
 
+traces = [ start_point, z ];
+
 % gradient descent algorithm:
 while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
-    
-    %% plot start point
-    plot3( axis, start_point(1), start_point(2), z, 'r*', 'LineWidth', 2 );
     
     %% computing next point  
     A = compute_hessian_and_evaluate( obj_func, start_point, report );
@@ -25,7 +24,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
 
     newton_step = -1 * (new_mtrx_A \ compute_gradient_and_evaluate( obj_func, start_point, report ));
     
-    % figure out alpha
+    % figure out 'alpha'
     alpha = linesearch( obj_func, start_point, newton_step );
     
     next_point = start_point' + alpha * newton_step;        
@@ -42,26 +41,18 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     end
     
     next_z = obj_func( next_point(1),next_point(2) );
-    
-    %% plot next point
-    plot3( axis, next_point(1), next_point(2), next_z, 'r*', 'LineWidth', 4 );
-    %% plot line between old and new point
-    plot3( axis, [start_point(1) next_point(1) ],[start_point(2) next_point(2)], [z next_z], 'ko-', 'LineWidth', 1);
-    pause( 0.1 );
-    hold( axis, 'on' );
-    
+     
     %% update termination metrics and general values
     iteration_counter = iteration_counter + 1;
     dx = norm(next_point-start_point);
+    
+    % save next point    
+    traces = [ traces; [ next_point', next_z ] ];
+
     z = next_z;
     start_point = next_point';
     
 end
-
-%% plot last point 
-plot3( axis, next_point(1),next_point(2), next_z,'ko', 'LineWidth', 10 );
-pause( 1 );
-
 
 %% replace negative entries of matrix with some delta
 function result = replace_negative_entries_with_delta( D )
