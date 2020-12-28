@@ -64,7 +64,7 @@ function result = replace_negative_entries_with_delta( D )
     result = D;
     
 %% calculate gradient of the objective function
-function eval_gradient = compute_gradient_and_evaluate(obj_func, point, report )
+function eval_gradient = compute_gradient_and_evaluate(obj_func, point, activate_logs )
     syms x y
     %% computing symbolic gradient
     gradient_vector = gradient(obj_func, [x,y]);
@@ -75,14 +75,14 @@ function eval_gradient = compute_gradient_and_evaluate(obj_func, point, report )
         eval( subs(gradient_vector(2), [x y], point))
     ];
     %% dump
-    if report
+    if activate_logs
         fprintf( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
         fprintf( 1, '  -NewPoint(%5.7f,%5.7f)-\n', eval_gradient );
     end
     
     
 %% calculate gradient of the objective function
-function eval_hessian = compute_hessian_and_evaluate(obj_func, point, report)
+function eval_hessian = compute_hessian_and_evaluate(obj_func, point, activate_logs)
     syms x y
     %% computing symbolic hessian
     hessian_mtrx = hessian(obj_func, [x,y]);
@@ -93,7 +93,7 @@ function eval_hessian = compute_hessian_and_evaluate(obj_func, point, report)
         eval(subs(hessian_mtrx(2,1), [x y], point)), eval(subs(hessian_mtrx(2,2), [x y], point))
     ];
     %% dump
-    if report 
+    if activate_logs 
         fprintf ( 1, '  -OldPoint(%5.7f,%5.7f)- ===>', point );
         fprintf ( 1, '  -NewPoint(%5.7f,%5.7f,%5.7f,%5.7f)-\n', eval_hessian );
     end
