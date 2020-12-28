@@ -1,7 +1,4 @@
-function opt_value = nelder_mead( axis, start_point, objective_func, maxiter )
-
-compute_b = @(c, n) c /( n * sqrt(2) ) * ( sqrt(n+1) - 1 );
-compute_a = @(b, c) b + c / sqrt(2);
+function opt_value = nelder_mead( axis, start_point, objective_func, maxiter, is_point_within_range )
 
 iteration_counter = 0;
 
@@ -15,12 +12,10 @@ beta  = 2
 gamma = 1/2
 delta = 1/2
 
-b = compute_b( c, dimension + 1 );
-a = compute_a( b, c );
-
 x0 = start_point;
-      
-simplex_vertices = [ x0; x0 + [ a b ]; x0 + [ b a ] ];
+
+simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, x0, c );
+
 plotit( axis, simplex_vertices, objective_func, 'red' )
 
 while iteration_counter <= maxiter
@@ -145,3 +140,32 @@ function plotit( axis, points, func, colour )
     
     pause( 0.2 );
     hold( axis, 'on' );
+    
+    
+function simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, start_point, c )
+
+    compute_b = @(c, n) c /( n * sqrt(2) ) * ( sqrt(n+1) - 1 );
+    compute_a = @(b, c) b + c / sqrt(2);
+
+    step = 1;
+    
+    while true
+        b = compute_b( c, dimension + 1 );
+        a = compute_a( b, c );
+
+        simplex_vertices = [ start_point; start_point + [ a b ]; start_point + [ b a ] ];
+
+        if is_point_within_range( simplex_vertices(1,:) ) && ...
+           is_point_within_range( simplex_vertices(2,:) ) && ...
+           is_point_within_range( simplex_vertices(3,:) )
+            break;
+        else
+            if c == 1 
+                step = 0.1;
+            elseif c == 0
+                return;
+            end
+            
+            c = c - step;
+        end
+end
