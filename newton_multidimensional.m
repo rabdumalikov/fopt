@@ -1,4 +1,4 @@
-function [error_msg, traces] = newton_multidimensional( obj_func, start_point,  tol, maxiter, is_point_within_range, report )
+function [error_msg, traces] = newton_multidimensional( objective_func, start_point, maxiter, tol, is_point_within_range, activate_logs )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -6,7 +6,7 @@ dxmin = 1e-6;
 %% initialize gradient norm, optimization vector, iteration counter, perturbation
 error_msg = ''; gnorm = inf; iteration_counter = 0; dx = inf;
  
-z = obj_func( start_point(1), start_point(2) );
+z = objective_func( start_point(1), start_point(2) );
 
 traces = [];
 
@@ -17,7 +17,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     traces = [ traces; [ start_point, z ] ];
 
     %% computing next point  
-    A = compute_hessian_and_evaluate( obj_func, start_point, report );
+    A = compute_hessian_and_evaluate( objective_func, start_point, activate_logs );
     
     [L, D] = ldl(A);
     
@@ -25,10 +25,10 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
 
     new_mtrx_A = L * D * L';
 
-    newton_step = -1 * (new_mtrx_A \ compute_gradient_and_evaluate( obj_func, start_point, report ));
+    newton_step = -1 * (new_mtrx_A \ compute_gradient_and_evaluate( objective_func, start_point, activate_logs ));
     
     % figure out 'alpha'
-    alpha = linesearch( obj_func, start_point, newton_step );
+    alpha = linesearch( objective_func, start_point, newton_step );
     
     next_point = start_point' + alpha * newton_step;        
         
@@ -43,7 +43,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
         return
     end
     
-    next_z = obj_func( next_point(1),next_point(2) );
+    next_z = objective_func( next_point(1),next_point(2) );
      
     %% update termination metrics and general values
     iteration_counter = iteration_counter + 1;

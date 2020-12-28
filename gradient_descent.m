@@ -1,4 +1,4 @@
-function [error_msg, traces ] = gradient_descent( obj_func, start_point, alpha, tol, maxiter, is_point_within_range, report )
+function [error_msg, traces ] = gradient_descent( objective_func, start_point, maxiter, tol, alpha, is_point_within_range, activate_logs )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -6,7 +6,7 @@ dxmin = 1e-6;
 %% initialize error_msg, gradient norm, optimization vector, iteration counter, perturbation
 error_msg = ''; gnorm = inf; iteration_counter = 0; dx = inf;
 
-z = obj_func(start_point(1),start_point(2));
+z = objective_func(start_point(1),start_point(2));
 
 traces = [];
 
@@ -17,7 +17,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     traces = [ traces; [ start_point, z ] ];
 
     %% calculate gradient:
-    eval_gradient = compute_gradient_and_evaluate(obj_func, start_point, report);
+    eval_gradient = compute_gradient_and_evaluate(objective_func, start_point, activate_logs);
     gnorm = norm(eval_gradient);
     
     %% take step:
@@ -34,7 +34,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
         return
     end
     
-    next_z = obj_func(next_point(1),next_point(2));
+    next_z = objective_func(next_point(1),next_point(2));
     
     %% update termination metrics and general values
     iteration_counter = iteration_counter + 1;

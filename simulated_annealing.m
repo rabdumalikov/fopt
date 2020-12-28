@@ -1,6 +1,6 @@
 
     
-function traces = simulated_annealing( obj_func, start_point, tol, maxiter, is_point_within_range, report )
+function traces = simulated_annealing( objective_func, start_point, maxiter, tol, is_point_within_range, activate_logs )
 
 %% constants
 Tinit = 100; % initial temperature
@@ -13,7 +13,7 @@ iteration_counter = 0;
 amount_successes = 0;
 consec = 0;
 T = Tinit;
-start_point_value = obj_func(start_point);
+start_point_value = objective_func(start_point);
 total_amount_of_iterations = 0;
 finished = false;
 
@@ -24,7 +24,7 @@ while ~finished
     iteration_counter = iteration_counter + 1; % just an iteration counter
     
     next_point = generate_new_point_in_range(start_point, is_point_within_range);
-    next_point_value = obj_func(next_point);
+    next_point_value = objective_func(next_point);
     
     delta_f = next_point_value - start_point_value;
     
@@ -72,7 +72,7 @@ end
 
 fval = start_point_value;
 
-if report
+if activate_logs
     fprintf(1, '\n  Initial temperature:     \t%g\n', Tinit);
     fprintf(1, '  Final temperature:       \t%g\n', T);
     fprintf(1, '  Consecutive rejections:  \t%i\n', consec);
