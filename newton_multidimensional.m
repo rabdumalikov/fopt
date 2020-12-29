@@ -32,11 +32,11 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     
     next_point = start_point' + alpha * newton_step;        
         
-    %% check steps
-    if ~is_point_within_range(next_point)
-        error_msg = sprintf( "Point(%d,%d) is Out Of Range! Solution: Decrease 'Alpha' or Increase 'Range'", next_point );
-        return
-    end
+%     %% check steps
+%     if ~is_point_within_range(next_point)
+%         error_msg = sprintf( "Point(%d,%d) is Out Of Range! Solution: Decrease 'Alpha' or Increase 'Range'", next_point );
+%         return
+%     end
     
     %% update termination metrics and general values
     

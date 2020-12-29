@@ -1,7 +1,7 @@
 function [ traces, opt_value ] = nelder_mead( objective_func, start_point, maxiter, is_point_within_range )
 
 % constants
-c = 10; alpha = 1; beta = 2; gamma = 1/2; delta = 1/2; 
+c = 100; alpha = 1; beta = 2; gamma = 1/2; delta = 1/2; 
 
 % other contstants
 iteration_counter = 0;
