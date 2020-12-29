@@ -8,13 +8,11 @@ iteration_counter = 0;
 
 [ ~, dimension ] = size( start_point );
 
-simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, start_point, c );
+simplex_vertices = compute_three_initial_points( dimension, start_point, c );
 
-traces = [];
+traces = [ simplex_vertices, objective_func( simplex_vertices ) ];
 
 while iteration_counter <= maxiter
-    
-    traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
     
     simplex_vertices = sort_by_function_values( objective_func, simplex_vertices );
     
@@ -81,7 +79,9 @@ while iteration_counter <= maxiter
         simplex_vertices(idx_for_worst,:) = point_to_replace;
     end
     
-    iteration_counter = iteration_counter + 1;
+    traces = [ traces; [ simplex_vertices, objective_func( simplex_vertices ) ] ];
+    
+    iteration_counter = iteration_counter + 1;       
 end
 
 arr = evaluate_points( objective_func, simplex_vertices );
@@ -112,30 +112,12 @@ function points = sort_by_function_values( obj_func, points )
     [ ~, index ] = sort( eval_pts );
     points = points(index,:);   
     
-function simplex_vertices = compute_three_initial_points( is_point_within_range, dimension, start_point, c )
+function simplex_vertices = compute_three_initial_points( dimension, start_point, c )
 
     compute_b = @(c, n) c /( n * sqrt(2) ) * ( sqrt(n+1) - 1 );
     compute_a = @(b, c) b + c / sqrt(2);
 
-    step = 1;
-    
-    while true
-        b = compute_b( c, dimension + 1 );
-        a = compute_a( b, c );
+    b = compute_b( c, dimension + 1 );
+    a = compute_a( b, c );
 
-        simplex_vertices = [ start_point; start_point + [ a b ]; start_point + [ b a ] ];
-
-        if is_point_within_range( simplex_vertices(1,:) ) && ...
-           is_point_within_range( simplex_vertices(2,:) ) && ...
-           is_point_within_range( simplex_vertices(3,:) )
-            break;
-        else
-            if c == 1 
-                step = 0.1;
-            elseif c == 0
-                return;
-            end
-            
-            c = c - step;
-        end
-    end
+    simplex_vertices = [ start_point; start_point + [ a b ]; start_point + [ b a ] ];
