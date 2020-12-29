@@ -1,10 +1,10 @@
-function [error_msg, traces] = newton_multidimensional( objective_func, start_point, maxiter, tol, is_point_within_range, activate_logs )
+function traces = newton_multidimensional( objective_func, start_point, maxiter, tol, activate_logs )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
  
-%% initialize gradient norm, optimization vector, iteration counter, perturbation
-error_msg = ''; gnorm = inf; iteration_counter = 0; dx = inf;
+%% gradient norm, optimization vector, iteration counter, perturbation
+gnorm = inf; iteration_counter = 0; dx = inf;
  
 z = objective_func( start_point(1), start_point(2) );
 
@@ -27,16 +27,9 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     % figure out 'alpha'
     alpha = linesearch( objective_func, start_point, newton_step );
     
-    next_point = start_point' + alpha * newton_step;        
-        
-%     %% check steps
-%     if ~is_point_within_range(next_point)
-%         error_msg = sprintf( "Point(%d,%d) is Out Of Range! Solution: Decrease 'Alpha' or Increase 'Range'", next_point );
-%         return
-%     end
+    next_point = start_point' + alpha * newton_step;                
     
-    %% update termination metrics and general values
-    
+    %% update termination metrics and general values    
     next_z = objective_func(next_point(1), next_point(2));
      
     iteration_counter = iteration_counter + 1;

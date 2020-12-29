@@ -1,6 +1,6 @@
 
     
-function traces = simulated_annealing( objective_func, start_point, maxiter, tol, is_point_within_range, activate_logs )
+function traces = simulated_annealing( objective_func, start_point, maxiter, tol, activate_logs )
 
 %% constants
 Tinit = 100; % initial temperature
@@ -21,7 +21,7 @@ traces = [ start_point, start_point_value ];
 
 while ~finished
     
-    next_point = generate_new_point_in_range(start_point, is_point_within_range);
+    next_point = generate_new_point(start_point);
     next_point_value = objective_func(next_point);
     
     delta_f = next_point_value - start_point_value;
@@ -84,11 +84,11 @@ end
 function result = lower_temperature( T, alpha )
     result = alpha * T;
 
-function point = generate_new_point_in_range( current_point, is_point_within_range )
+function point = generate_new_point_in_range( current_point )
     point = generate_new_point( current_point );
-    while ~is_point_within_range( point ) 
-        point = generate_new_point(current_point); 
-    end
+    %while ~is_point_within_range( point ) 
+    %    point = generate_new_point(current_point); 
+    %end
     
 function point = generate_new_point( current_point )
     point = current_point + ( randperm(length(current_point)) == length(current_point) ) * randn / ( rand * 5 );

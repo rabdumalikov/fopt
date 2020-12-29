@@ -1,4 +1,4 @@
-function [ traces, opt_value ] = nelder_mead( objective_func, start_point, maxiter, is_point_within_range )
+function [ traces, opt_value ] = nelder_mead( objective_func, start_point, maxiter )
 
 % constants
 c = 100; alpha = 1; beta = 2; gamma = 1/2; delta = 1/2; 
