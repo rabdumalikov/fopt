@@ -5,8 +5,8 @@ function traces = simulated_annealing( objective_func, start_point, maxiter, tol
 %% constants
 Tinit = 100; % initial temperature
 alpha = 0.8; % old value = 0.8
-max_consec_rejections = 100;
-max_success = 20;
+max_consec_rejections = maxiter; %20;
+max_success = maxiter; %5;
 
 % counters etc
 iteration_counter = 0;
