@@ -1,7 +1,4 @@
-
-    
 function traces = simulated_annealing( objective_func, start_point, maxiter, tol, step_size, activate_logs )
-
 %% constants
 Tinit = 100; % initial temperature
 alpha = 0.8; % old value = 0.8
