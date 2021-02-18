@@ -1,4 +1,12 @@
-function traces = newton_multidimensional( objective_func, start_point, maxiter, tol, activate_logs )
+%  Copyright (c) 2017-present Rustam Abdumalikov
+%
+%  "FunctionOptimizer" application
+%
+% Distributed under the Boost Software License, Version 1.0. (See
+% accompanying file LICENSE_1_0.txt or copy at
+% http://www.boost.org/LICENSE_1_0.txt)
+
+function traces = newton_multidimensional( objective_func, start_point, maxiter, tol, step_size, activate_logs )
 
 %% minimum allowed perturbation
 dxmin = 1e-6;
@@ -25,7 +33,7 @@ while gnorm >= tol && iteration_counter <= maxiter && dx >= dxmin
     newton_step = -1 * (new_mtrx_A \ compute_gradient_and_evaluate( objective_func, start_point, activate_logs ));
     
     % figure out 'alpha'
-    alpha = linesearch( objective_func, start_point, newton_step );
+    alpha = linesearch( objective_func, start_point, newton_step, step_size );
     
     next_point = start_point' + alpha * newton_step;                
     
@@ -92,8 +100,8 @@ function eval_hessian = compute_hessian_and_evaluate(obj_func, point, activate_l
     end
     
 %% hk - is search direction
-function lambda = linesearch( obj_func, start_point, newton_step )
-    lambda = 1;
+function lambda = linesearch( obj_func, start_point, newton_step, step_size )
+    lambda = step_size; % setting it to '1' doesn't work well.
  
     obj_func_for_vector = @(start_point) obj_func(start_point(1),start_point(2));
     
